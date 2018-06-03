@@ -6,16 +6,18 @@
 
   Hacked from http://code.google.com/p/rc-switch/
   by @justy to provide a handy RF code sniffer
+
+  mod by davidwowa
 */
 
 #include "../rc-switch/RCSwitch.h"
 #include <stdlib.h>
 #include <stdio.h>
-     
+#include <unistd.h>
+#include <stdint.h>
+#include <time.h>
      
 RCSwitch mySwitch;
- 
-
 
 int main(int argc, char *argv[]) {
   
@@ -45,9 +47,12 @@ int main(int argc, char *argv[]) {
     
         if (value == 0) {
           printf("Unknown encoding\n");
-        } else {    
-   
-          printf("Received %i\n", mySwitch.getReceivedValue() );
+        } else {	
+		FILE *fhc;
+		fhc = fopen("/home/pi/.433_mhz_sniffer", "a");
+		fprintf(fhc, "%u000,%i\n", (unsigned) time(NULL), mySwitch.getReceivedValue());
+		fclose(fhc);  
+          	printf("Received %i\n", mySwitch.getReceivedValue() );
         }
     
         mySwitch.resetAvailable();
